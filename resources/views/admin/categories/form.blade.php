@@ -49,9 +49,9 @@
 
                 <div>
                     <label for="image" class="block text-sm font-medium text-slate-700 mb-1.5">Gambar <span class="text-slate-400 font-normal">(opsional, maks 2MB)</span></label>
-                    @if ($category && $category->image)
+                    @if ($category && $category->categoryImage)
                         <div class="mb-3">
-                            <img src="{{ $category->image->link }}" alt="{{ $category->name }}"
+                            <img src="{{ $category->categoryImage->link }}" alt="{{ $category->name }}"
                                  class="w-24 h-24 rounded-xl object-cover border border-slate-200">
                         </div>
                     @endif

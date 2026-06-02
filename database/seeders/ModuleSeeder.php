@@ -27,7 +27,7 @@ class ModuleSeeder extends Seeder
             ['module_group_id' => 5, 'name' => 'Merek', 'route' => 'admin.brands', 'order' => 1, 'icon' => 'bookmark', 'is_shown' => 1],
 
             ['module_group_id' => 6, 'name' => 'Produk', 'route' => 'admin.products', 'order' => 1, 'icon' => 'box', 'is_shown' => 1],
-            ['module_group_id' => 6, 'name' => 'Varian Produk', 'route' => 'admin.product-variants', 'order' => 2, 'icon' => 'columns-gap', 'is_shown' => 1],
+            ['module_group_id' => 6, 'name' => 'Varian Produk', 'route' => 'admin.products.variants', 'order' => 2, 'icon' => 'columns-gap', 'is_shown' => 0],
 
             ['module_group_id' => 7, 'name' => 'Gudang', 'route' => 'admin.warehouses', 'order' => 1, 'icon' => 'building', 'is_shown' => 1],
             ['module_group_id' => 7, 'name' => 'Stok', 'route' => 'admin.stocks', 'order' => 2, 'icon' => 'boxes', 'is_shown' => 1],
