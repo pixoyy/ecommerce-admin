@@ -1,34 +1,40 @@
 @import "tailwindcss";
 @import "bootstrap-icons/font/bootstrap-icons.min.css";
 
-/* ── Bootstrap collapse (default needed for accordion) ── */
-.collapse:not(.show) {
+/* ── Sidebar Accordion ── */
+
+/* Panel — controlled by the HTML hidden attribute */
+.sidebar-group-panel {
+    display: block;
+}
+.sidebar-group-panel[hidden] {
     display: none;
 }
-.collapsing {
-    height: 0;
-    overflow: hidden;
-    transition: height 0.3s ease;
-    position: relative;
-}
 
-/* ── Sidebar Navigation ── */
-
-/* Chevron rotation — driven by Bootstrap's .collapsed class */
+/* Chevron rotation */
 .sidebar-group-btn .chevron-icon {
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
-.sidebar-group-btn.collapsed .chevron-icon {
+.sidebar-group-btn:not(.open) .chevron-icon {
     transform: rotate(-90deg);
 }
+.sidebar-group-btn.open .chevron-icon {
+    transform: rotate(0deg);
+}
 
-/* Hover lift on module links */
+/* Module link transitions */
 .sidebar-module-link {
     transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
-.sidebar-module-link:not(.active):hover {
+.sidebar-module-link:not(.active):not(.sidebar-module-disabled):hover {
     background-color: #eef2ff;
     color: #4338ca;
+}
+
+/* Disabled module — visual only, no interaction */
+.sidebar-module-disabled {
+    user-select: none;
+    pointer-events: none;
 }
 
 /* Sub-menu card */

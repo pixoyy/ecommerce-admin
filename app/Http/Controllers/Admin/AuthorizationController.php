@@ -19,7 +19,10 @@ class AuthorizationController extends Controller
     {
         $groups = ModuleGroup::with(['modules' => fn ($q) => $q->orderBy('order')])->orderBy('id')->get();
         $authTypes = AuthorizationType::orderBy('id')->get();
-        $currentAuths = Authorization::where('role_id', $role->id)->pluck('authorization_type_id', 'module_id');
+        $currentAuths = Authorization::where('role_id', $role->id)
+            ->get()
+            ->groupBy('module_id')
+            ->map(fn ($items) => $items->pluck('authorization_type_id')->toArray());
 
         return view('admin.roles.authorizations', compact('role', 'groups', 'authTypes', 'currentAuths'));
     }
