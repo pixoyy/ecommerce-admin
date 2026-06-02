@@ -34,8 +34,8 @@
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-5 py-4 text-slate-500">{{ $categories->firstItem() + $loop->index }}</td>
                             <td class="px-5 py-4">
-                                @if ($category->image)
-                                    <img src="{{ $category->image->link }}" alt="{{ $category->name }}"
+                                @if ($category->categoryImage)
+                                    <img src="{{ $category->categoryImage->link }}" alt="{{ $category->name }}"
                                          class="w-10 h-10 rounded-lg object-cover border border-slate-200">
                                 @else
                                     <span class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs">

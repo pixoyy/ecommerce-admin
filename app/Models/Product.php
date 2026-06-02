@@ -35,7 +35,7 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function thumbnail(): BelongsTo
+    public function thumbnailImage(): BelongsTo
     {
         return $this->belongsTo(FileStorage::class, 'thumbnail');
     }

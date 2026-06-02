@@ -17,7 +17,7 @@ class CategoryController extends Controller
 {
     public function index(): View
     {
-        $categories = Category::with('image')->orderBy('sort_order')->orderBy('name')->paginate(15);
+        $categories = Category::with('categoryImage')->orderBy('sort_order')->orderBy('name')->paginate(15);
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -46,7 +46,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category): View
     {
-        $category->load('image');
+        $category->load('categoryImage');
 
         return view('admin.categories.form', compact('category'));
     }
@@ -58,10 +58,10 @@ class CategoryController extends Controller
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
 
         if ($request->hasFile('image')) {
-            if ($category->image) {
-                $oldPath = str_replace('/storage/', '', $category->image->link);
+            if ($category->categoryImage) {
+                $oldPath = str_replace('/storage/', '', $category->categoryImage->link);
                 Storage::disk('public')->delete($oldPath);
-                $category->image->delete();
+                $category->categoryImage->delete();
             }
 
             $path = $request->file('image')->store('categories', 'public');

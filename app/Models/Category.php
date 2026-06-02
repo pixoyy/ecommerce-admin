@@ -21,7 +21,7 @@ class Category extends Model
         ];
     }
 
-    public function image(): BelongsTo
+    public function categoryImage(): BelongsTo
     {
         return $this->belongsTo(FileStorage::class, 'image');
     }
