@@ -10,8 +10,9 @@ return new class extends Migration
     {
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_group_id')->nullable()->constrained('module_groups')->cascadeOnDelete();
+            $table->foreignId('module_group_id')->nullable()->constrained('module_groups');
             $table->string('name', 100);
+            $table->string('icon', 100)->nullable();
             $table->string('route', 100);
             $table->integer('order');
             $table->tinyInteger('is_shown')->comment('0 = hidden, 1 = shown');

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['module_group_id', 'name', 'route', 'order', 'is_shown'])]
+#[Fillable(['module_group_id', 'name', 'icon', 'route', 'order', 'is_shown'])]
 class Module extends Model
 {
     use HasFactory, SoftDeletes;
