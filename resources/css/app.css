@@ -1,9 +1,52 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+@import "bootstrap-icons/font/bootstrap-icons.min.css";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+/* ── Bootstrap collapse (default needed for accordion) ── */
+.collapse:not(.show) {
+    display: none;
+}
+.collapsing {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    position: relative;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* ── Sidebar Navigation ── */
+
+/* Chevron rotation — driven by Bootstrap's .collapsed class */
+.sidebar-group-btn .chevron-icon {
+    transition: transform 0.3s ease;
+}
+.sidebar-group-btn.collapsed .chevron-icon {
+    transform: rotate(-90deg);
+}
+
+/* Hover lift on module links */
+.sidebar-module-link {
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.sidebar-module-link:not(.active):hover {
+    background-color: #eef2ff;
+    color: #4338ca;
+}
+
+/* Sub-menu card */
+.sidebar-submenu-card {
+    transition: box-shadow 0.2s ease;
+}
+
+/* Custom thin scrollbar for sidebar nav */
+#sidebarNav::-webkit-scrollbar {
+    width: 4px;
+}
+#sidebarNav::-webkit-scrollbar-track {
+    background: transparent;
+}
+#sidebarNav::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 999px;
+}
+#sidebarNav::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
 }
