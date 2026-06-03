@@ -16,7 +16,7 @@
     <div class="flex min-h-screen">
         {{-- Sidebar --}}
         <aside id="sidebar"
-        class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-slate-200 flex flex-col transition-all duration-300 shadow-sm">
+            class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-slate-200 flex flex-col transition-all duration-300 shadow-sm">
             {{-- Logo --}}
             <div class="flex items-center gap-3 px-5 py-5 border-b border-slate-100">
                 <div
@@ -31,7 +31,7 @@
 
             @php
                 $currentRouteName = Route::currentRouteName() ?? '';
-                $dashboardGroup = $sidebarGroups->firstWhere('name', 'Dashboard');
+
                 $resolveSidebarRoute = function (?string $route): ?string {
                     if (!$route) {
                         return null;
@@ -47,159 +47,150 @@
 
                     return null;
                 };
-                $groupIcons = [
-                    'Navigasi' => 'bi-speedometer2',
-                    'Akses' => 'bi-shield-lock',
-                    'Pengguna' => 'bi-people',
-                    'Kategori' => 'bi-tags',
-                    'Merek' => 'bi-bookmark',
-                    'Produk' => 'bi-box-seam',
-                    'Inventaris' => 'bi-building',
-                    'Promosi & Pembayaran' => 'bi-credit-card',
-                    'Pesanan' => 'bi-cart-check',
-                    'Lainnya' => 'bi-grid-3x3-gap',
-                ];
-                $moduleIcons = [
-                    'admin.dashboard' => 'bi-grid-1x2-fill',
-                    'admin.roles' => 'bi-shield-lock',
-                    'admin.admins' => 'bi-person-badge',
-                    'admin.categories' => 'bi-tags',
-                    'admin.brands' => 'bi-bookmark',
-                    'admin.products' => 'bi-box',
-                    'admin.product-variants' => 'bi-columns-gap',
-                    'admin.warehouses' => 'bi-building',
-                    'admin.stocks' => 'bi-boxes',
-                    'admin.promotions' => 'bi-megaphone',
-                    'admin.payment-accounts' => 'bi-credit-card',
-                    'admin.payments' => 'bi-cash-stack',
-                    'admin.orders' => 'bi-cart',
-                    'admin.shipments' => 'bi-truck',
-                    'admin.users' => 'bi-people',
-                    'admin.point-transactions' => 'bi-star',
-                    'admin.reviews' => 'bi-chat-square-text',
-                    'admin.file-storages' => 'bi-folder',
-                ];
+
+                $normalizeIcon = function (?string $icon, string $default = 'folder2-open'): string {
+                    if (!$icon) {
+                        return 'bi-' . $default;
+                    }
+
+                    return str_starts_with($icon, 'bi-') ? $icon : 'bi-' . $icon;
+                };
+
+                $allModules = $sidebarGroups->flatMap(fn($group) => $group->modules);
+
+                $activeModule = $allModules->first(function ($module) use ($currentRouteName) {
+                    return $currentRouteName === $module->route ||
+                        $currentRouteName === $module->route . '.index' ||
+                        ($module->route !== '' && str($currentRouteName)->startsWith($module->route . '.'));
+                });
+
+                $activeGroup = $activeModule ? $sidebarGroups->firstWhere('id', $activeModule->module_group_id) : null;
+
+                $pageTitle = $activeModule?->name ?? 'Dashboard';
+                $pageIcon = $normalizeIcon($activeModule?->icon ?? ($activeGroup?->icon ?? 'grid-1x2-fill'));
             @endphp
 
             <nav id="sidebarNav" class="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
-                @if ($dashboardGroup)
-                    @php
-                        $dashboardModule = $dashboardGroup->modules->firstWhere('route', 'admin.dashboard');
-                        $dashboardRoute = $dashboardModule ? $resolveSidebarRoute($dashboardModule->route) : null;
-                        $dashboardIsActive = $currentRouteName === 'admin.dashboard';
-                        $dashboardIcon = $dashboardGroup->icon ?: 'grid-1x2-fill';
-                    @endphp
-
-                    @if ($dashboardModule && $dashboardRoute)
-                        <a href="{{ route($dashboardRoute) }}" @class([
-                            'sidebar-module-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm relative',
-                            'active bg-indigo-600 text-white shadow-md shadow-indigo-200' => $dashboardIsActive,
-                            'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700' => !$dashboardIsActive,
-                        ])>
-                            <span @class([
-                                'w-6 h-6 rounded-lg flex items-center justify-center text-sm flex-shrink-0',
-                                'bg-indigo-500 text-white' => $dashboardIsActive,
-                                'bg-slate-100 text-slate-500' => !$dashboardIsActive,
-                            ])>
-                                <i class="bi bi-{{ $dashboardIcon }}"></i>
-                            </span>
-                            <span class="font-medium">{{ $dashboardModule->name }}</span>
-                        </a>
-                    @endif
-                @endif
-
-                @foreach ($sidebarGroups->reject(fn($group) => $group->name === 'Dashboard') as $key => $group)
+                @foreach ($sidebarGroups as $key => $group)
                     @php
                         $modules = $group->modules->filter(fn($module) => $module->is_shown)->values();
+
                         $firstRoutableModule = $modules->first(function ($module) use ($resolveSidebarRoute) {
                             return $resolveSidebarRoute($module->route) !== null;
                         });
-                        $groupRoute = $firstRoutableModule ? route($resolveSidebarRoute($firstRoutableModule->route)) : null;
+
+                        $groupRoute = $firstRoutableModule
+                            ? route($resolveSidebarRoute($firstRoutableModule->route))
+                            : null;
 
                         $groupHasActiveModule = $modules->contains(function ($module) use ($currentRouteName) {
-                            if ($currentRouteName === $module->route) {
-                                return true;
-                            }
-                            return $module->route !== '' && str($currentRouteName)->startsWith($module->route . '.');
+                            return $currentRouteName === $module->route ||
+                                $currentRouteName === $module->route . '.index' ||
+                                ($module->route !== '' && str($currentRouteName)->startsWith($module->route . '.'));
                         });
 
-                        $groupIcon = $group->icon ?: $groupIcons[$group->name] ?? 'bi-folder2-open';
+                        $groupIcon = $normalizeIcon($group->icon);
                         $panelId = 'sidebar-group-' . $key;
+                        $isSingleModule = $modules->count() === 1;
+                        $singleModule = $modules->first();
+                        $singleRoute = $singleModule ? $resolveSidebarRoute($singleModule->route) : null;
                     @endphp
 
                     @continue($modules->isEmpty())
 
-                    <button type="button"
-                        class="sidebar-group-btn flex items-center gap-3 w-[calc(100%-8px)] mx-1 px-3.5 py-2.5 rounded-xl text-sm text-left cursor-pointer relative {{ $groupHasActiveModule ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-700' }}"
-                        data-sidebar-toggle data-sidebar-target="{{ $panelId }}" aria-expanded="false"
-                        aria-controls="{{ $panelId }}"
-                        @if ($groupRoute) data-sidebar-route="{{ $groupRoute }}" @endif>
-                        <span @class([
-                            'w-6 h-6 rounded-lg flex items-center justify-center text-sm flex-shrink-0',
-                            'bg-indigo-100 text-indigo-600' => $groupHasActiveModule,
-                            'bg-slate-100 text-slate-500' => !$groupHasActiveModule,
+                    @if ($isSingleModule && $singleRoute)
+                        <a href="{{ route($singleRoute) }}" @class([
+                            'sidebar-module-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm relative',
+                            'active bg-indigo-600 text-white shadow-md shadow-indigo-200' => $groupHasActiveModule,
+                            'text-slate-600 hover:bg-indigo-50 hover:text-indigo-700' => !$groupHasActiveModule,
                         ])>
-                            <i class="bi {{ $groupIcon }}"></i>
-                        </span>
-                        <span class="flex-1 min-w-0">{{ $group->name }}</span>
-                        <i class="bi bi-chevron-down text-xs chevron-icon text-slate-400"></i>
-                    </button>
+                            <span @class([
+                                'w-6 h-6 rounded-lg flex items-center justify-center text-sm flex-shrink-0',
+                                'bg-indigo-500 text-white' => $groupHasActiveModule,
+                                'bg-slate-100 text-slate-500' => !$groupHasActiveModule,
+                            ])>
+                                <i class="bi {{ $normalizeIcon($singleModule->icon ?? $group->icon) }}"></i>
+                            </span>
 
-                    <div id="{{ $panelId }}" class="sidebar-group-panel" hidden>
-                        <div
-                            class="ml-5 mr-2 mb-2 p-1.5 rounded-xl bg-white border border-slate-100 shadow-sm sidebar-submenu-card">
-                            @foreach ($modules as $module)
-                                @php
-                                    $resolvedRoute = Route::has($module->route)
-                                        ? $module->route
-                                        : (Route::has($module->route . '.index')
-                                            ? $module->route . '.index'
-                                            : null);
-                                    $routeExists = $resolvedRoute !== null;
-                                    $moduleIcon = $module->icon ?: $moduleIcons[$module->route] ?? '';
-                                    $moduleIsActive =
-                                        $currentRouteName === $module->route ||
-                                        $currentRouteName === $module->route . '.index' ||
-                                        ($module->route !== '' &&
-                                            str($currentRouteName)->startsWith($module->route . '.'));
-                                @endphp
+                            <span class="font-medium">{{ $singleModule->name }}</span>
+                        </a>
+                    @else
+                        <button type="button"
+                            @class([
+                                'sidebar-group-btn flex items-center gap-3 w-[calc(100%-8px)] px-3.5 py-2.5 rounded-xl text-sm text-left cursor-pointer relative',
+                                'bg-indigo-700 text-white' => $groupHasActiveModule,
+                                'text-slate-500 hover:bg-indigo-50 hover:text-indigo-700' => !$groupHasActiveModule,
+                            ])
+                            data-sidebar-toggle data-sidebar-target="{{ $panelId }}" aria-expanded="false"
+                            aria-controls="{{ $panelId }}"
+                            @if ($groupRoute) data-sidebar-route="{{ $groupRoute }}" @endif>
 
-                                @if ($routeExists)
-                                    <a href="{{ route($resolvedRoute) }}" @class([
-                                        'sidebar-module-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm',
-                                        'active bg-indigo-600 text-white font-medium shadow-sm shadow-indigo-200' => $moduleIsActive,
-                                        'text-slate-600' => !$moduleIsActive,
-                                    ])>
-                                    @else
-                                        <span
-                                            class="sidebar-module-link sidebar-module-disabled flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-400">
-                                @endif
-                                <span @class([
-                                    'w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0',
-                                    'bg-indigo-500' => $moduleIsActive,
-                                    'bg-slate-100 text-slate-500' => !$moduleIsActive,
-                                ])>
-                                    @if ($moduleIcon)
-                                        <i class="bi {{ $moduleIcon }} {{ $moduleIsActive ? 'text-white' : '' }}"
-                                            style="font-size:12px"></i>
-                                    @else
-                                        <i class="bi bi-dot"></i>
+                            <span @class([
+                                'w-6 h-6 rounded-lg flex items-center justify-center text-sm flex-shrink-0',
+                                'bg-indigo-500 text-white' => $groupHasActiveModule,
+                                'bg-slate-100 text-slate-500' => !$groupHasActiveModule,
+                            ])>
+                                <i class="bi {{ $groupIcon }}"></i>
+                            </span>
+
+                            <span class="flex-1 min-w-0">{{ $group->name }}</span>
+                            <i class="bi bi-chevron-down text-xs chevron-icon text-slate-400"></i>
+                            </i>
+                        </button>
+
+
+                        <div id="{{ $panelId }}" class="sidebar-group-panel" hidden>
+                            <div class="ml-5 mr-2 mt-1 mb-2 space-y-1">
+                                @foreach ($modules as $module)
+                                    @php
+                                        $resolvedRoute = $resolveSidebarRoute($module->route);
+                                        $routeExists = $resolvedRoute !== null;
+                                        $moduleIcon = $normalizeIcon($module->icon);
+                                        $moduleIsActive =
+                                            $currentRouteName === $module->route ||
+                                            $currentRouteName === $module->route . '.index' ||
+                                            ($module->route !== '' &&
+                                                str($currentRouteName)->startsWith($module->route . '.'));
+                                    @endphp
+
+                                    @if ($routeExists)
+                                        <a href="{{ route($resolvedRoute) }}" @class([
+                                            'sidebar-module-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm',
+                                            'active bg-indigo-50 text-indigo-700 font-medium shadow-sm shadow-indigo-200' => $moduleIsActive,
+                                            'text-slate-600' => !$moduleIsActive,
+                                        ])>
+                                        @else
+                                            <span
+                                                class="sidebar-module-link sidebar-module-disabled flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-400">
                                     @endif
-                                </span>
-                                <span class="flex-1 min-w-0">{{ $module->name }}</span>
-                                @if (!$routeExists)
-                                    <span
-                                        class="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-medium">Coming
-                                        Soon</span>
-                                @endif
-                                @if ($routeExists)
-                                    </a>
-                                @else
+
+                                    <span @class([
+                                        'w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0',
+                                        'bg-indigo-50' => $moduleIsActive,
+                                        'text-slate-500' => !$moduleIsActive,
+                                    ])>
+                                        <i class="bi {{ $moduleIcon }} {{ $moduleIsActive ? ' text-indigo-700' : '' }}"
+                                            style="font-size:12px"></i>
                                     </span>
-                                @endif
-                            @endforeach
+
+                                    <span class="flex-1 min-w-0">{{ $module->name }}</span>
+
+                                    @if (!$routeExists)
+                                        <span
+                                            class="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-medium">
+                                            Coming Soon
+                                        </span>
+                                    @endif
+
+                                    @if ($routeExists)
+                                        </a>
+                                    @else
+                                        </span>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endforeach
             </nav>
 
@@ -220,9 +211,17 @@
         {{-- Main Content --}}
         <div class="flex-1 ml-64 flex flex-col min-h-screen">
             {{-- Topbar --}}
+
             <header
                 class="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm">
-                <h1 class="text-lg font-semibold text-slate-800">@yield('page_title', 'Dashboard')</h1>
+
+                <h1 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="bi {{ $pageIcon }}"></i>
+                    </span>
+                    {{ $pageTitle }}
+                </h1>
+
                 <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
                     @csrf
                     <button type="submit"
