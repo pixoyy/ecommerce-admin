@@ -5,9 +5,12 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AuthorizationController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\PaymentAccountController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\PromotionItemController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\UserController;
@@ -28,8 +31,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
         $placeholderRoutes = [
-            'promotions' => 'Promosi',
-            'payment-accounts' => 'Akun Pembayaran',
             'payments' => 'Konfirmasi Pembayaran',
             'orders' => 'Pesanan',
             'shipments' => 'Pengiriman',
@@ -81,6 +82,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         Route::middleware('superadmin')->group(function () {
+            Route::controller(PromotionController::class)->prefix('promotions')->name('promotions.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('{promotion}', 'show')->name('show');
+                Route::get('{promotion}/edit', 'edit')->name('edit');
+                Route::put('{promotion}', 'update')->name('update');
+                Route::delete('{promotion}', 'destroy')->name('destroy');
+            });
+
+            Route::post('promotions/{promotion}/items', [PromotionItemController::class, 'store'])->name('promotions.items.store');
+            Route::delete('promotions/items/{item}', [PromotionItemController::class, 'destroy'])->name('promotions.items.destroy');
+
+            Route::controller(PaymentAccountController::class)->prefix('payment-accounts')->name('payment-accounts.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('{paymentAccount}/edit', 'edit')->name('edit');
+                Route::put('{paymentAccount}', 'update')->name('update');
+                Route::delete('{paymentAccount}', 'destroy')->name('destroy');
+            });
+
             Route::controller(RoleController::class)->prefix('roles')->name('roles.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('create', 'create')->name('create');
