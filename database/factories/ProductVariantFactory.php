@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class ProductVariantFactory extends Factory
 {
@@ -14,17 +15,10 @@ class ProductVariantFactory extends Factory
     {
         return [
             'product_id' => Product::factory(),
-            'label' => fake()->randomElement(['50ml', '100ml', '150ml', '30ml', '200ml']),
-            'price' => fake()->randomFloat(2, 50000, 500000),
-            'sku' => fake()->unique()->bothify('SKU-####-??'),
+            'label' => fake()->word() . ' ' . fake()->randomElement(['50ml', '100ml', '250g', '500g']),
+            'price' => fake()->randomFloat(2, 10000, 500000),
+            'sku' => strtoupper(Str::random(8)),
             'is_active' => 1,
         ];
-    }
-
-    public function inactive(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_active' => 0,
-        ]);
     }
 }

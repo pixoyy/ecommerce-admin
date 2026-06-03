@@ -9,7 +9,9 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('admin.login'));
@@ -26,8 +28,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
         $placeholderRoutes = [
-            'warehouses' => 'Gudang',
-            'stocks' => 'Stok',
             'promotions' => 'Promosi',
             'payment-accounts' => 'Akun Pembayaran',
             'payments' => 'Konfirmasi Pembayaran',
@@ -63,6 +63,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('{variant}/edit', 'edit')->name('edit');
             Route::put('{variant}', 'update')->name('update');
             Route::delete('{variant}', 'destroy')->name('destroy');
+        });
+
+        Route::controller(WarehouseController::class)->prefix('warehouses')->name('warehouses.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('{warehouse}/edit', 'edit')->name('edit');
+            Route::put('{warehouse}', 'update')->name('update');
+            Route::delete('{warehouse}', 'destroy')->name('destroy');
+        });
+
+        Route::controller(StockController::class)->prefix('stocks')->name('stocks.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
         });
 
         Route::middleware('superadmin')->group(function () {
