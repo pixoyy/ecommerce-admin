@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentAccountController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductVariantController;
@@ -32,7 +33,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
         $placeholderRoutes = [
-            'payments' => 'Konfirmasi Pembayaran',
             'shipments' => 'Pengiriman',
             'point-transactions' => 'Poin Reward',
             'reviews' => 'Ulasan',
@@ -110,6 +110,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
             });
 
             Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
+            Route::controller(PaymentController::class)->prefix('payments')->name('payments.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('{payment}', 'show')->name('show');
+            });
+
+            Route::post('payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
+            Route::post('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
 
             Route::controller(RoleController::class)->prefix('roles')->name('roles.')->group(function () {
                 Route::get('/', 'index')->name('index');
