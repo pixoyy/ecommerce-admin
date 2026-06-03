@@ -16,7 +16,7 @@
     <div class="flex min-h-screen">
         {{-- Sidebar --}}
         <aside id="sidebar"
-            class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-slate-200 flex flex-col transition-all duration-300 shadow-sm">
+        class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-slate-200 flex flex-col transition-all duration-300 shadow-sm">
             {{-- Logo --}}
             <div class="flex items-center gap-3 px-5 py-5 border-b border-slate-100">
                 <div

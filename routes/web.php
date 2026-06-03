@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AuthorizationController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentAccountController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
@@ -32,7 +33,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         $placeholderRoutes = [
             'payments' => 'Konfirmasi Pembayaran',
-            'orders' => 'Pesanan',
             'shipments' => 'Pengiriman',
             'point-transactions' => 'Poin Reward',
             'reviews' => 'Ulasan',
@@ -103,6 +103,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::put('{paymentAccount}', 'update')->name('update');
                 Route::delete('{paymentAccount}', 'destroy')->name('destroy');
             });
+
+            Route::controller(OrderController::class)->prefix('orders')->name('orders.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('{order}', 'show')->name('show');
+            });
+
+            Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
             Route::controller(RoleController::class)->prefix('roles')->name('roles.')->group(function () {
                 Route::get('/', 'index')->name('index');
