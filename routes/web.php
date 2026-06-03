@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\PaymentAccountController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PointController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductVariantController;
@@ -35,9 +36,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
-        $placeholderRoutes = [
-            'reviews' => 'Ulasan',
-        ];
+        $placeholderRoutes = [];
 
         foreach ($placeholderRoutes as $uri => $title) {
             Route::view($uri, 'admin.placeholder', ['pageTitle' => $title])->name($uri);
@@ -131,6 +130,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             });
 
             Route::get('file-storages', [FileStorageController::class, 'index'])->name('file-storages.index');
+
+            Route::controller(ReviewController::class)->prefix('reviews')->name('reviews.')->group(function () {
+                Route::get('/', 'index')->name('index');
+            });
+
+            Route::post('reviews/{review}/toggle', [ReviewController::class, 'toggle'])->name('reviews.toggle');
 
             Route::controller(RoleController::class)->prefix('roles')->name('roles.')->group(function () {
                 Route::get('/', 'index')->name('index');
