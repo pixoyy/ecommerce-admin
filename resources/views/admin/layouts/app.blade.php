@@ -129,9 +129,6 @@
 
                     @continue($modules->isEmpty())
 
-                    {{-- <div class="text-[11px] font-semibold uppercase tracking-widest text-slate-500 px-3 pt-4 pb-1.5">
-                        {{ $group->name }}</div> --}}
-
                     <button type="button"
                         class="sidebar-group-btn flex items-center gap-3 w-[calc(100%-8px)] mx-1 px-3.5 py-2.5 rounded-xl text-sm text-left cursor-pointer relative {{ $groupHasActiveModule ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-700' }}"
                         data-sidebar-toggle data-sidebar-target="{{ $panelId }}" aria-expanded="false"
