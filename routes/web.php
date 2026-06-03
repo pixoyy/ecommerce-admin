@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentAccountController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\PromotionController;
@@ -33,7 +34,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
         $placeholderRoutes = [
-            'shipments' => 'Pengiriman',
             'point-transactions' => 'Poin Reward',
             'reviews' => 'Ulasan',
             'file-storages' => 'File Storage',
@@ -118,6 +118,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
             Route::post('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+
+            Route::get('shipments', [ShipmentController::class, 'index'])->name('shipments.index');
+            Route::get('orders/{order}/shipments/create', [ShipmentController::class, 'create'])->name('orders.shipments.create');
+            Route::post('orders/{order}/shipments', [ShipmentController::class, 'store'])->name('orders.shipments.store');
+            Route::get('shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+            Route::put('shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
 
             Route::controller(RoleController::class)->prefix('roles')->name('roles.')->group(function () {
                 Route::get('/', 'index')->name('index');
