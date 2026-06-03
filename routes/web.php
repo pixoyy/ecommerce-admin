@@ -5,9 +5,11 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AuthorizationController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\FileStorageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentAccountController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PointController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\ProductImageController;
@@ -34,9 +36,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
         $placeholderRoutes = [
-            'point-transactions' => 'Poin Reward',
             'reviews' => 'Ulasan',
-            'file-storages' => 'File Storage',
         ];
 
         foreach ($placeholderRoutes as $uri => $title) {
@@ -124,6 +124,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('orders/{order}/shipments', [ShipmentController::class, 'store'])->name('orders.shipments.store');
             Route::get('shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
             Route::put('shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
+
+            Route::controller(PointController::class)->prefix('point-transactions')->name('point-transactions.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('{user}', 'show')->name('show');
+            });
+
+            Route::get('file-storages', [FileStorageController::class, 'index'])->name('file-storages.index');
 
             Route::controller(RoleController::class)->prefix('roles')->name('roles.')->group(function () {
                 Route::get('/', 'index')->name('index');
