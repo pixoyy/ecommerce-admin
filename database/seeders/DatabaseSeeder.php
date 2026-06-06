@@ -12,11 +12,27 @@ class DatabaseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
         $this->call([
+            // Admin & RBAC
             RoleSeeder::class,
             AuthorizationTypeSeeder::class,
             ModuleGroupSeeder::class,
             ModuleSeeder::class,
             AdminSeeder::class,
+
+            // Master data
+            FileStorageSeeder::class,
+            CategorySeeder::class,
+            BrandSeeder::class,
+            WarehouseSeeder::class,
+            UserSeeder::class,
+            PaymentAccountSeeder::class,
+
+            // Ecommerce data
+            ProductSeeder::class,
+            PromotionSeeder::class,
+            CartSeeder::class,
+            OrderSeeder::class,
+            ReviewSeeder::class,
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
